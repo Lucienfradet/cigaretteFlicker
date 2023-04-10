@@ -1,5 +1,5 @@
 class Cigarette {
-    constructor({x, y}) {
+    constructor({x, y, angle}) {
         this.brokenFlag = false;
 
         this.pos = {
@@ -41,7 +41,7 @@ class Cigarette {
         // physics.addToWorld(this.segments);
         this.compoundBody = physics.createCompoundBody(this.segments.segmentBodies);
         //Body.setMass(this.body, 0.3);
-        //Body.setAngle(this.body, PI);
+        Body.setAngle(this.compoundBody, angle);
         Composite.add(physics.world, this.compoundBody); //adds the body to matter.js world
     }
 
@@ -171,13 +171,13 @@ class Cigarette {
 
         Body.applyForce( this.compoundBody.first, {x: this.compoundBody.first.position.x + this.segments.first.segmentBodies.length * this.segmentWidth, y: this.compoundBody.first.position.y}, {x: -0.1, y: -0.01});
         Body.applyForce( this.compoundBody.second, {x: this.compoundBody.second.position.x - this.segments.second.segmentBodies.length * this.segmentWidth, y: this.compoundBody.second.position.y}, {x: 0.1, y: -0.01});
-
+        
         setTimeout(() => {
             physics.setGravity(0);
             Composite.remove(physics.world, this.compoundBody.first);
             Composite.remove(physics.world, this.compoundBody.second);
-            cigarettes[0] = new Cigarette({x: canvas.w/2, y: canvas.h/2});
-        }, 5000);
+            cigarettes[0] = new Cigarette({x: canvas.w/2 + random(-canvas.w/20, canvas.w/20), y: canvas.h/2 + random(-canvas.h/2, canvas.h/2), angle: random(-TWO_PI, TWO_PI)});
+        }, 6000);
     }
 
     playSound() {

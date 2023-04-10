@@ -42,7 +42,7 @@ function setup() {
     physics.runWorld();
     physics.setGravity(0);
 
-    cigarettes[0] = new Cigarette({x: canvas.w/2, y: canvas.h/2});
+    cigarettes[0] = new Cigarette({x: canvas.w/2 + random(-canvas.w/20, canvas.w/20), y: canvas.h/2 + random(-canvas.h/2, canvas.h/2), angle: random(-TWO_PI, TWO_PI)});
 }
 
 
