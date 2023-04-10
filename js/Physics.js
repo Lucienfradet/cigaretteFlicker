@@ -24,7 +24,8 @@ class Physics {
 
         canvas.mouse.pixelRatio = pixelDensity(); //Adapt to the pixel density of the screen in use
 
-        let options = {
+        this.mouseContraintFlag = true;
+        this.mouseContraintOptions = {
             collisionFilter: {mask: 0b1},
             mouse: canvas.mouse,
             constraint: {
@@ -32,7 +33,7 @@ class Physics {
                 angularStiffness: 0.2
             }
         }
-        this.mConstraint = MouseConstraint.create(this.engine, options);
+        this.mConstraint = MouseConstraint.create(this.engine, this.mouseContraintOptions);
         Composite.add(this.world, this.mConstraint);
     }
 
@@ -54,26 +55,42 @@ class Physics {
     }
 
     displayMouseConstraint() {
-        push();
-        let pos = {
-          x: this.mConstraint.mouse.position.x,
-          y: this.mConstraint.mouse.position.y
+        if (this.mouseContraintFlag) {
+            push();
+            let pos = {
+                x: this.mConstraint.mouse.position.x,
+                y: this.mConstraint.mouse.position.y
+            }
+            fill(255,255,255,150);
+            noStroke();
+            ellipseMode(CENTER);
+            ellipse(pos.x, pos.y, 10);
+            pop();
+        
+            //display line
+            if (this.mConstraint.body) {
+                let pos = this.mConstraint.body.position;
+                let offset = this.mConstraint.constraint.pointB;
+                let mouse = this.mConstraint.mouse.position;
+                push();
+                stroke(255, 230);
+                line(pos.x + offset.x, pos.y + offset.y, mouse.x, mouse.y);
+                pop();
+            }
         }
-        fill(255,255,255,150);
-        noStroke();
-        ellipseMode(CENTER);
-        ellipse(pos.x, pos.y, 10);
-        pop();
-    
-        //display line
-        if (this.mConstraint.body) {
-          let pos = this.mConstraint.body.position;
-          let offset = this.mConstraint.constraint.pointB;
-          let mouse = this.mConstraint.mouse.position;
-          push();
-          stroke(255, 230);
-          line(pos.x + offset.x, pos.y + offset.y, mouse.x, mouse.y);
-          pop();
-        }
+
+        Matter.Events.on(this.mConstraint, "startdrag", () => {console.log("mouseDrag");});
+        
+      }
+
+      disableMouseConstraintTemp(time) {
+        this.mouseContraintFlag = false;
+        Composite.remove(this.world, this.mConstraint);
+        setTimeout(this.reactivateMouseContraint, time);
+      }
+
+      reactivateMouseContraint() {
+        Composite.add(physics.world, physics.mConstraint);
+        this.mouseContraintFlag = true;
       }
 }

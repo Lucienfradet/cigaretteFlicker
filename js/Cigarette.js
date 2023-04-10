@@ -116,6 +116,8 @@ class Cigarette {
         physics.setGravity(1);
         this.playSound();
 
+        setTimeout(() => {physics.disableMouseConstraintTemp(3000)}, 200);
+
         //create two new compound bodies
         let first = {
             segmentBodies: [],
@@ -154,7 +156,6 @@ class Cigarette {
 
         //remove previous
         Composite.remove(physics.world, this.compoundBody);
-        console.log(this.compoundBody);
 
         this.segments = {
             first: first,
@@ -168,10 +169,15 @@ class Cigarette {
         Composite.add(physics.world, this.compoundBody.first);
         Composite.add(physics.world, this.compoundBody.second);
 
-        //Body.applyForce(this.compoundBody.first, {x: this.compoundBody.first.position, y: this.compoundBody.first.position.y}, {x: 0, y: 0.001});
+        Body.applyForce( this.compoundBody.first, {x: this.compoundBody.first.position.x + this.segments.first.segmentBodies.length * this.segmentWidth, y: this.compoundBody.first.position.y}, {x: -0.1, y: -0.01});
+        Body.applyForce( this.compoundBody.second, {x: this.compoundBody.second.position.x - this.segments.second.segmentBodies.length * this.segmentWidth, y: this.compoundBody.second.position.y}, {x: 0.1, y: -0.01});
 
-        console.log(this.segments)
-
+        setTimeout(() => {
+            physics.setGravity(0);
+            Composite.remove(physics.world, this.compoundBody.first);
+            Composite.remove(physics.world, this.compoundBody.second);
+            cigarettes[0] = new Cigarette({x: canvas.w/2, y: canvas.h/2});
+        }, 5000);
     }
 
     playSound() {

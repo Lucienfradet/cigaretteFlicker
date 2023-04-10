@@ -8,7 +8,7 @@ Lucien Cusson-Fradet
 let canvas = {
     obj: undefined,
     backgroundColor: "#FFF3E5",
-    w: window.innerWidth,
+    w: undefined,
     h: window.innerHeight
 }
 
@@ -17,14 +17,17 @@ let cigarettes = [];
 
 let sounds = []
 
+let state = "pressTheScreen";
+
 /**
 Description of preload
 */
 function preload() {
     sounds[0] = loadSound('assets/sounds/tear_001.mp3');
     sounds[1] = loadSound('assets/sounds/tear_002.mp3');
-    sounds[2] = loadSound('assets/sounds/tear_003.mp3');
-    sounds[3] = loadSound('assets/sounds/tear_004.mp3');
+    sounds[2] = loadSound('assets/sounds/tear_004.mp3');
+
+    canvas.w = canvas.h / (20/9);
 }
 
 
@@ -34,6 +37,7 @@ Description of setup
 function setup() {
     canvas.obj = createCanvas(canvas.w, canvas.h);
     background(canvas.backgroundColor);
+    pixelDensity(1);
     physics = new Physics();
     physics.runWorld();
     physics.setGravity(0);
@@ -46,10 +50,32 @@ function setup() {
 Description of draw()
 */
 function draw() {
-    background(canvas.backgroundColor);
+    switch(state) {
 
-    cigarettes[0].display();
-    cigarettes[0].mouseCollisions();
+        case "pressTheScreen":
+        background(canvas.backgroundColor);
+        push();
+        textSize(50);
+        fill("#5B2303")
+        textAlign(CENTER, CENTER);
+        text("Touch the Screen", canvas.w/2, canvas.h/2);
+        pop();
 
-    physics.displayMouseConstraint();
+        Matter.Events.on(physics.mConstraint, "mousedown", () => {
+            state = "cigarette";
+        })
+        break;
+
+        case "cigarette":
+        background(canvas.backgroundColor);
+        if (cigarettes[0] != undefined) {
+            cigarettes[0].display();
+            cigarettes[0].mouseCollisions();
+        }
+        //physics.displayMouseConstraint();
+        break;
+    }
+    
+
+    
 }
